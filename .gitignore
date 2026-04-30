@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Credentials & tokens
+scripts/client_secret.json
+scripts/token.pickle
+
+# Generated reports
+report.html
+
+# OS
+.DS_Store
