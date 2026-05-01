@@ -398,6 +398,32 @@ def fetch_content_type(analytics, video_ids, start_date, end_date, video_df):
     return df[["Video", "Video title", "Content type", "Views", "Watch time (hours)", "Avg % viewed", "Subscribers gained"]]
 
 
+def fetch_demographics(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video age/gender demographic breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "ageGroup", "gender"],
+        metrics=["viewerPercentage"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Age group", "Gender", "Viewer %"])
+
+    df.columns = ["Video", "Age group", "Gender", "Viewer %"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Viewer %"] = df["Viewer %"].round(2)
+
+    return df[["Video", "Video title", "Age group", "Gender", "Viewer %"]]
+
+
 # ── Main ────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
