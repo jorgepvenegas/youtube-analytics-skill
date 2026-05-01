@@ -1,4 +1,4 @@
-# pi-youtube-analytics
+# youtube-analytics-skill
 
 A [pi](https://pi.dev) skill for analyzing YouTube Studio analytics. Fetch data via the YouTube Analytics API, generate interactive HTML dashboards, and get LLM-powered deep research reports.
 
@@ -13,13 +13,13 @@ A [pi](https://pi.dev) skill for analyzing YouTube Studio analytics. Fetch data 
 ## Installation
 
 ```bash
-pi install git:github.com/yourusername/pi-youtube-analytics
+pi install git:github.com/yourusername/youtube-analytics-skill
 ```
 
 Or for local development:
 
 ```bash
-pi install ./path/to/pi-youtube-analytics
+pi install ./path/to/youtube-analytics-skill
 ```
 
 ## One-Time Setup
