@@ -242,6 +242,41 @@ def fetch_channel_totals(analytics, start_date, end_date):
     return df
 
 
+def fetch_traffic_sources(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video traffic source breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "insightTrafficSourceType"],
+        metrics=["views", "estimatedMinutesWatched"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Traffic source", "Views", "Watch time (hours)"])
+
+    df.columns = ["Video", "Traffic source", "Views", "estimatedMinutesWatched"]
+
+    # Join video titles
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+
+    # Convert watch time to hours
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+
+    # Clean up types
+    df["Views"] = df["Views"].astype(int)
+
+    # Select and order final columns
+    df = df[["Video", "Video title", "Traffic source", "Views", "Watch time (hours)"]]
+
+    return df
+
+
 # ── Main ────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
