@@ -14,6 +14,7 @@ import json
 import os
 import pandas as pd
 import numpy as np
+import socket
 import subprocess
 import sys
 import webbrowser
@@ -1256,9 +1257,24 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass  # suppress logs
 
+def find_free_port(start_port, max_attempts=100):
+    """Find an available port, starting from start_port and incrementing."""
+    for port in range(start_port, start_port + max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("127.0.0.1", port))
+                return port
+            except OSError:
+                continue
+    print(f"ERROR: Could not find an available port in range {start_port}-{start_port + max_attempts - 1}")
+    sys.exit(1)
+
 def serve():
-    server = HTTPServer(("127.0.0.1", args.port), Handler)
-    url = f"http://127.0.0.1:{args.port}/report.html"
+    actual_port = find_free_port(args.port)
+    if actual_port != args.port:
+        print(f"\nPort {args.port} is busy. Using port {actual_port} instead.")
+    server = HTTPServer(("127.0.0.1", actual_port), Handler)
+    url = f"http://127.0.0.1:{actual_port}/report.html"
     print(f"\nServer running at: {url}")
     print("Press Ctrl+C to stop.")
     if not args.no_open:
