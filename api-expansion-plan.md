@@ -266,9 +266,9 @@ fetch_report(
 
 ### Phase 1: Quick Wins (same API call pattern as existing)
 - [x] Traffic sources
-- [ ] Geography
-- [ ] Device type
-- [ ] Content type
+- [x] Geography
+- [x] Device type
+- [x] Content type
 
 These all use the same `fetch_report` pattern with `video` filter — can batch in one loop, similar to existing daily breakdown.
 
