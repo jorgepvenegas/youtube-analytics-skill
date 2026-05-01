@@ -47,6 +47,7 @@ uv run python scripts/serve_report.py              # Generate interactive dashbo
 - Daily video breakdowns
 - Channel-level daily totals
 - Per-video traffic sources (how viewers discover each video: search, suggested, browse, external, etc.)
+- Search terms (actual YouTube search queries driving traffic to each video)
 
 **Note:** Impressions/CTR may be unavailable via API for some channels. If so, CTR will show 0.00% — the rest of the analysis still works.
 
@@ -127,6 +128,7 @@ Copy this checklist and track progress:
 - `Chart data.csv` — daily breakdown per video
 - `Totals.csv` — channel-level daily totals
 - `Traffic sources.csv` — per-video traffic source breakdown (search, suggested, browse, etc.)
+- `Search terms.csv` — top YouTube search queries driving traffic to each video
 
 **If using manual exports:** Load all CSVs. Note column names and date ranges. Identify the primary key for joining (usually video title or ID). Flag missing data.
 
