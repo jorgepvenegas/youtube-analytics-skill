@@ -13,7 +13,7 @@ A [pi](https://pi.dev) skill for analyzing YouTube Studio analytics. Fetch data 
 ## Installation
 
 ```bash
-pi install git:github.com/yourusername/youtube-analytics-skill
+pi install git:github.com/jorgepvenegas/youtube-analytics-skill
 ```
 
 Or for local development:
