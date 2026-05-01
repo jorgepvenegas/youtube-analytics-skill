@@ -110,6 +110,41 @@ The dashboard includes:
 - **Top 20% vs Bottom 20%** comparison panel
 - **Deep dives**: highest engagement, best subscriber conversion, top momentum
 
+## Async Researcher Agent
+
+For deep analysis that runs concurrently with the web report:
+
+```bash
+# Full pipeline with background researcher
+uv run python scripts/run_full_pipeline.py
+
+# Skip researcher (faster, just raw data)
+uv run python scripts/run_full_pipeline.py --no-research
+
+# Run researcher manually on existing data
+uv run python scripts/researcher.py --data-dir data/latest
+```
+
+The researcher produces:
+- `reports/research_<timestamp>.md` — Written analysis (what works, what doesn't, new ideas)
+- `reports/enriched_<timestamp>.csv` — Per-video recommendations and anomaly flags
+
+The web report footer shows research status and links to the report when complete.
+
+### Researcher Sub-Agents
+
+For channels with 50+ videos, the researcher can fan out into parallel sub-tasks:
+- **Content Type Analyst** — which formats drive engagement
+- **Traffic Source Analyst** — where discovery succeeds vs fails
+- **Search Term Analyst** — keyword gaps and opportunities
+- **Retention Analyst** — hook quality, drop-off points
+- **Idea Generator** — synthesizes findings into actionable content ideas
+
+Launch via pi subagents:
+```bash
+pi subagent run --async youtube-researcher "Run deep research on data/api_fetch_<timestamp>"
+```
+
 ## Core Workflow
 
 Copy this checklist and track progress:
