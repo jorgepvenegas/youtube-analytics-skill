@@ -1,0 +1,12 @@
+{
+  "name": "pi-youtube-analytics",
+  "version": "1.0.0",
+  "description": "YouTube Analytics skill for pi — fetch data via API, generate interactive reports, and get LLM-powered research insights",
+  "keywords": ["pi-package", "youtube", "analytics", "data", "dashboard"],
+  "author": "",
+  "license": "MIT",
+  "pi": {
+    "skills": ["./skills"],
+    "agents": ["./agents"]
+  }
+}

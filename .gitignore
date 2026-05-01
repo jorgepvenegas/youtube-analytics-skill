@@ -5,15 +5,16 @@ __pycache__/
 .venv/
 
 # Credentials & tokens
-scripts/client_secret.json
-scripts/token.pickle
+client_secret.json
+token.pickle
 
 # Generated reports
 report.html
+reports/
 
 # OS
 .DS_Store
+
+# Pi / development
 .superpowers/
 .worktrees/
-reports/.research_*.log
-reports/
