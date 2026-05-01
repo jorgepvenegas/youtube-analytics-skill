@@ -1,8 +1,8 @@
 ---
 name: youtube-researcher
 description: Deep research analyst for YouTube analytics data. Uses LLM reasoning to analyze CSVs, identify patterns, diagnose problems, and write a comprehensive markdown report with actionable content ideas.
-tools: read, bash, edit, write
-model: anthropic/claude-sonnet-4
+tools: read, bash, edit, write, web_search, web_fetch
+model: opencode-go/kimi-k2.6
 systemPromptMode: replace
 inheritProjectContext: false
 inheritSkills: false

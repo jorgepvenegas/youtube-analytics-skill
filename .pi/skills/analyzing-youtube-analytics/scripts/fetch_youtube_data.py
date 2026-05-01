@@ -242,6 +242,225 @@ def fetch_channel_totals(analytics, start_date, end_date):
     return df
 
 
+def fetch_traffic_sources(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video traffic source breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "insightTrafficSourceType"],
+        metrics=["views", "estimatedMinutesWatched"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Traffic source", "Views", "Watch time (hours)"])
+
+    df.columns = ["Video", "Traffic source", "Views", "estimatedMinutesWatched"]
+
+    # Join video titles
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+
+    # Convert watch time to hours
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+
+    # Clean up types
+    df["Views"] = df["Views"].astype(int)
+
+    # Select and order final columns
+    df = df[["Video", "Video title", "Traffic source", "Views", "Watch time (hours)"]]
+
+    return df
+
+
+def fetch_search_terms(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch top search terms that drive traffic to each video."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "insightTrafficSourceDetail"],
+        metrics=["views", "estimatedMinutesWatched"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter};insightTrafficSourceType==YT_SEARCH",
+        sort="-views",
+        max_results=25,
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Search term", "Views", "Watch time (hours)"])
+
+    df.columns = ["Video", "Search term", "Views", "estimatedMinutesWatched"]
+
+    # Join video titles
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+
+    # Convert watch time to hours
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+
+    # Clean up types
+    df["Views"] = df["Views"].astype(int)
+
+    # Select and order final columns
+    df = df[["Video", "Video title", "Search term", "Views", "Watch time (hours)"]]
+
+    return df
+
+
+def fetch_geography(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video geographic breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "country"],
+        metrics=["views", "estimatedMinutesWatched", "subscribersGained"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Country", "Views", "Watch time (hours)", "Subscribers gained"])
+
+    df.columns = ["Video", "Country", "Views", "estimatedMinutesWatched", "Subscribers gained"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+    df["Subscribers gained"] = df["Subscribers gained"].astype(int)
+
+    return df[["Video", "Video title", "Country", "Views", "Watch time (hours)", "Subscribers gained"]]
+
+
+def fetch_device_type(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video device type breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "deviceType"],
+        metrics=["views", "estimatedMinutesWatched"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Device", "Views", "Watch time (hours)"])
+
+    df.columns = ["Video", "Device", "Views", "estimatedMinutesWatched"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+
+    return df[["Video", "Video title", "Device", "Views", "Watch time (hours)"]]
+
+
+def fetch_content_type(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video content type breakdown (short, videoOnDemand, liveStream)."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "creatorContentType"],
+        metrics=["views", "estimatedMinutesWatched", "averageViewPercentage", "subscribersGained"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Content type", "Views", "Watch time (hours)", "Avg % viewed", "Subscribers gained"])
+
+    df.columns = ["Video", "Content type", "Views", "estimatedMinutesWatched", "Avg % viewed", "Subscribers gained"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+    df["Subscribers gained"] = df["Subscribers gained"].astype(int)
+    df["Avg % viewed"] = df["Avg % viewed"].round(2)
+
+    return df[["Video", "Video title", "Content type", "Views", "Watch time (hours)", "Avg % viewed", "Subscribers gained"]]
+
+
+def fetch_demographics(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video age/gender demographic breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "ageGroup", "gender"],
+        metrics=["viewerPercentage"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Age group", "Gender", "Viewer %"])
+
+    df.columns = ["Video", "Age group", "Gender", "Viewer %"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Viewer %"] = df["Viewer %"].round(2)
+
+    return df[["Video", "Video title", "Age group", "Gender", "Viewer %"]]
+
+
+def fetch_retention_curves(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch audience retention curves — one API call per video."""
+    empty_cols = ["Video", "Video title", "Elapsed ratio", "Audience watch ratio", "Relative retention"]
+    title_map = video_df.set_index("video_id")["title"]
+    all_dfs = []
+
+    for i, video_id in enumerate(video_ids):
+        print(f"        Retention {i + 1}/{len(video_ids)}: {title_map.get(video_id, video_id)[:50]}")
+        try:
+            rows, headers = fetch_report(
+                analytics,
+                dimensions=["elapsedVideoTimeRatio"],
+                metrics=["audienceWatchRatio", "relativeRetentionPerformance"],
+                start_date=start_date,
+                end_date=end_date,
+                filters=f"video=={video_id};audienceType==ORGANIC",
+            )
+        except Exception as e:
+            print(f"        ⚠ Skipped {video_id}: {e}")
+            continue
+
+        if not rows:
+            continue
+
+        df = pd.DataFrame(rows, columns=headers)
+        df.columns = ["Elapsed ratio", "Audience watch ratio", "Relative retention"]
+        df["Video"] = video_id
+        df["Video title"] = title_map.get(video_id, "")
+        all_dfs.append(df)
+
+    if not all_dfs:
+        return pd.DataFrame(columns=empty_cols)
+
+    result = pd.concat(all_dfs, ignore_index=True)
+    return result[empty_cols]
+
+
 # ── Main ────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
@@ -266,13 +485,13 @@ def main():
     print(f"Output directory: {output_dir}")
 
     # ── Fetch video list ──
-    print("\n[1/4] Fetching video list...")
+    print("\n[1/11] Fetching video list...")
     video_df = fetch_video_list(youtube, channel_id)
     video_ids = video_df["video_id"].tolist()
     print(f"      Found {len(video_df)} videos")
 
     # ── Fetch per-video analytics ──
-    print("\n[2/4] Fetching per-video lifetime analytics...")
+    print("\n[2/11] Fetching per-video lifetime analytics...")
     video_stats = fetch_video_analytics(analytics, video_ids, start_date, end_date)
     print(f"      Fetched stats for {len(video_stats)} videos")
 
@@ -329,7 +548,7 @@ def main():
     print(f"      Saved: {table_path}")
 
     # ── Fetch daily video breakdown ──
-    print("\n[3/4] Fetching daily video breakdown...")
+    print("\n[3/11] Fetching daily video breakdown...")
     daily_df = fetch_daily_video_breakdown(analytics, video_ids, start_date, end_date)
     print(f"      Fetched {len(daily_df)} day-video records")
 
@@ -352,7 +571,7 @@ def main():
     print(f"      Saved: {chart_path}")
 
     # ── Fetch channel totals ──
-    print("\n[4/4] Fetching channel daily totals...")
+    print("\n[4/11] Fetching channel daily totals...")
     totals_df = fetch_channel_totals(analytics, start_date, end_date)
     print(f"      Fetched {len(totals_df)} daily records")
 
@@ -366,6 +585,69 @@ def main():
     totals_path = output_dir / "Totals.csv"
     totals_out.to_csv(totals_path, index=False)
     print(f"      Saved: {totals_path}")
+
+    # ── Fetch traffic sources ──
+    print("\n[5/11] Fetching traffic sources...")
+    traffic_df = fetch_traffic_sources(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(traffic_df)} traffic source records")
+
+    traffic_path = output_dir / "Traffic sources.csv"
+    traffic_df.to_csv(traffic_path, index=False)
+    print(f"      Saved: {traffic_path}")
+
+    # ── Fetch search terms ──
+    print("\n[6/11] Fetching search terms...")
+    search_df = fetch_search_terms(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(search_df)} search term records")
+
+    search_path = output_dir / "Search terms.csv"
+    search_df.to_csv(search_path, index=False)
+    print(f"      Saved: {search_path}")
+
+    # ── Fetch geography ──
+    print("\n[7/11] Fetching geography...")
+    geo_df = fetch_geography(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(geo_df)} geography records")
+
+    geo_path = output_dir / "Geography.csv"
+    geo_df.to_csv(geo_path, index=False)
+    print(f"      Saved: {geo_path}")
+
+    # ── Fetch device type ──
+    print("\n[8/11] Fetching device types...")
+    device_df = fetch_device_type(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(device_df)} device type records")
+
+    device_path = output_dir / "Device type.csv"
+    device_df.to_csv(device_path, index=False)
+    print(f"      Saved: {device_path}")
+
+    # ── Fetch content type ──
+    print("\n[9/11] Fetching content types...")
+    content_df = fetch_content_type(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(content_df)} content type records")
+
+    content_path = output_dir / "Content type.csv"
+    content_df.to_csv(content_path, index=False)
+    print(f"      Saved: {content_path}")
+
+    # ── Fetch demographics ──
+    print("\n[10/11] Fetching demographics...")
+    demo_df = fetch_demographics(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(demo_df)} demographic records")
+
+    demo_path = output_dir / "Demographics.csv"
+    demo_df.to_csv(demo_path, index=False)
+    print(f"      Saved: {demo_path}")
+
+    # ── Fetch retention curves ──
+    print("\n[11/11] Fetching retention curves (1 API call per video)...")
+    retention_df = fetch_retention_curves(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(retention_df)} retention data points")
+
+    retention_path = output_dir / "Retention.csv"
+    retention_df.to_csv(retention_path, index=False)
+    print(f"      Saved: {retention_path}")
 
     # ── Summary ──
     print("\n" + "=" * 60)
