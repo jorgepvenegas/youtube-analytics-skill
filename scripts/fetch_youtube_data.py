@@ -338,13 +338,13 @@ def main():
     print(f"Output directory: {output_dir}")
 
     # ── Fetch video list ──
-    print("\n[1/5] Fetching video list...")
+    print("\n[1/6] Fetching video list...")
     video_df = fetch_video_list(youtube, channel_id)
     video_ids = video_df["video_id"].tolist()
     print(f"      Found {len(video_df)} videos")
 
     # ── Fetch per-video analytics ──
-    print("\n[2/5] Fetching per-video lifetime analytics...")
+    print("\n[2/6] Fetching per-video lifetime analytics...")
     video_stats = fetch_video_analytics(analytics, video_ids, start_date, end_date)
     print(f"      Fetched stats for {len(video_stats)} videos")
 
@@ -401,7 +401,7 @@ def main():
     print(f"      Saved: {table_path}")
 
     # ── Fetch daily video breakdown ──
-    print("\n[3/5] Fetching daily video breakdown...")
+    print("\n[3/6] Fetching daily video breakdown...")
     daily_df = fetch_daily_video_breakdown(analytics, video_ids, start_date, end_date)
     print(f"      Fetched {len(daily_df)} day-video records")
 
@@ -424,7 +424,7 @@ def main():
     print(f"      Saved: {chart_path}")
 
     # ── Fetch channel totals ──
-    print("\n[4/5] Fetching channel daily totals...")
+    print("\n[4/6] Fetching channel daily totals...")
     totals_df = fetch_channel_totals(analytics, start_date, end_date)
     print(f"      Fetched {len(totals_df)} daily records")
 
@@ -440,13 +440,22 @@ def main():
     print(f"      Saved: {totals_path}")
 
     # ── Fetch traffic sources ──
-    print("\n[5/5] Fetching traffic sources...")
+    print("\n[5/6] Fetching traffic sources...")
     traffic_df = fetch_traffic_sources(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(traffic_df)} traffic source records")
 
     traffic_path = output_dir / "Traffic sources.csv"
     traffic_df.to_csv(traffic_path, index=False)
     print(f"      Saved: {traffic_path}")
+
+    # ── Fetch search terms ──
+    print("\n[6/6] Fetching search terms...")
+    search_df = fetch_search_terms(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(search_df)} search term records")
+
+    search_path = output_dir / "Search terms.csv"
+    search_df.to_csv(search_path, index=False)
+    print(f"      Saved: {search_path}")
 
     # ── Summary ──
     print("\n" + "=" * 60)
