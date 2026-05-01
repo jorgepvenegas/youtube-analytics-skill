@@ -110,28 +110,49 @@ The dashboard includes:
 - **Top 20% vs Bottom 20%** comparison panel
 - **Deep dives**: highest engagement, best subscriber conversion, top momentum
 
-## Async Researcher Agent
+## Async Researcher Agent (LLM-Powered)
 
-For deep analysis that runs concurrently with the web report:
+For **deep, LLM-powered analysis** that runs concurrently with the web report, the pi harness dispatches a `youtube-researcher` sub-agent. The agent reads the raw CSVs, uses its reasoning capabilities to identify patterns, diagnose problems, and write a comprehensive markdown report.
 
+### Two-Step Workflow
+
+**Step 1:** Fetch data and start the web server
 ```bash
-# Full pipeline with background researcher
 uv run python scripts/run_full_pipeline.py
+```
+This fetches data and starts the server. The web report shows raw metrics immediately.
 
-# Skip researcher (faster, just raw data)
-uv run python scripts/run_full_pipeline.py --no-research
-
-# Run researcher manually on existing data
-uv run python scripts/researcher.py --data-dir data/latest
+**Step 2:** Dispatch the researcher agent (in pi)
+```
+Dispatch the youtube-researcher agent on data/latest
+```
+Or with a specific directory:
+```
+Dispatch the youtube-researcher agent on data/api_fetch_2026-04-30_120000
 ```
 
-The researcher produces:
-- `reports/research_<timestamp>.md` — Written analysis (what works, what doesn't, new ideas)
+The agent will:
+1. Read all CSV files (Table data.csv, Traffic sources.csv, Search terms.csv, etc.)
+2. Run `scripts/researcher.py` for baseline statistics
+3. Apply LLM reasoning to identify patterns, diagnose problems, find gaps
+4. Write `reports/research_<timestamp>.md` with actionable insights
+
+### What the Researcher Analyzes
+
+- **What works:** Content types, durations, traffic sources, and demographics of top performers
+- **What doesn't work:** Diagnostic flags (discovery problem vs retention problem) for underperformers
+- **Content gaps:** High-performing topics with few videos, underserved search terms
+- **New content ideas:** 5-10 specific, actionable video ideas based on data patterns
+- **Action plan:** Prioritized quick wins, medium-term bets, and long-term experiments
+
+### Output
+
+- `reports/research_<timestamp>.md` — Written analysis with LLM insights
 - `reports/enriched_<timestamp>.csv` — Per-video recommendations and anomaly flags
 
-The web report footer shows research status and links to the report when complete.
+The web report footer automatically shows research status and links to the report when complete.
 
-### Researcher Sub-Agents
+### Parallel Sub-Agents (Optional)
 
 For channels with 50+ videos, the researcher can fan out into parallel sub-tasks:
 - **Content Type Analyst** — which formats drive engagement
@@ -139,11 +160,6 @@ For channels with 50+ videos, the researcher can fan out into parallel sub-tasks
 - **Search Term Analyst** — keyword gaps and opportunities
 - **Retention Analyst** — hook quality, drop-off points
 - **Idea Generator** — synthesizes findings into actionable content ideas
-
-Launch via pi subagents:
-```bash
-pi subagent run --async youtube-researcher "Run deep research on data/api_fetch_<timestamp>"
-```
 
 ## Core Workflow
 
