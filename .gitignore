@@ -19,3 +19,4 @@ data/
 # Pi / development
 .superpowers/
 .worktrees/
+.pi/
