@@ -274,11 +274,11 @@ These all use the same `fetch_report` pattern with `video` filter — can batch 
 
 ### Phase 2: Search & Demographics (slightly different patterns)
 - [x] Search terms (requires `insightTrafficSourceType==YT_SEARCH` filter + `maxResults`)
-- [ ] Demographics (only `viewerPercentage` metric, no views/watch time)
+- [x] Demographics (only `viewerPercentage` metric, no views/watch time)
 
 ### Phase 3: Retention Curves (most complex)
-- [ ] Retention curves (one API call per video — needs rate-limiting and caching)
-- [ ] Consider fetching only for: top 20 videos, bottom 20 videos, and any video uploaded in last 30 days
+- [x] Retention curves (one API call per video — needs rate-limiting and caching)
+- [x] Consider fetching only for: top 20 videos, bottom 20 videos, and any video uploaded in last 30 days
 
 ---
 
