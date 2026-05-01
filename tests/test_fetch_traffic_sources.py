@@ -123,3 +123,50 @@ class TestFetchTrafficSources:
 
         # 3 rows for vid_AAA + 2 rows for vid_BBB = 5 total
         assert len(result) == 5
+
+
+def make_empty_analytics():
+    """Analytics service that returns no rows."""
+
+    class FakeQuery:
+        def execute(self):
+            return {
+                "columnHeaders": [
+                    {"name": "video"},
+                    {"name": "insightTrafficSourceType"},
+                    {"name": "views"},
+                    {"name": "estimatedMinutesWatched"},
+                ],
+                "rows": [],
+            }
+
+    class FakeReports:
+        def query(self, **kwargs):
+            return FakeQuery()
+
+    class FakeAnalytics:
+        def reports(self):
+            return FakeReports()
+
+    return FakeAnalytics()
+
+
+class TestFetchTrafficSourcesEdgeCases:
+    def test_empty_response_returns_empty_dataframe_with_columns(self):
+        analytics = make_empty_analytics()
+        video_df = make_video_df()
+        video_ids = video_df["video_id"].tolist()
+
+        result = fetch_traffic_sources(
+            analytics, video_ids, "2020-01-01", "2026-04-30", video_df
+        )
+
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 0
+        assert list(result.columns) == [
+            "Video",
+            "Video title",
+            "Traffic source",
+            "Views",
+            "Watch time (hours)",
+        ]
