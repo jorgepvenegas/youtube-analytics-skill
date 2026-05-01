@@ -51,6 +51,8 @@ uv run python scripts/serve_report.py              # Generate interactive dashbo
 - Geography (views, watch time, subscribers by country per video)
 - Device type (mobile, desktop, TV, tablet breakdown per video)
 - Content type (short vs videoOnDemand vs liveStream per video)
+- Demographics (age group and gender breakdown per video)
+- Retention curves (audience watch ratio at each point in the video)
 
 **Note:** Impressions/CTR may be unavailable via API for some channels. If so, CTR will show 0.00% — the rest of the analysis still works.
 
@@ -135,6 +137,8 @@ Copy this checklist and track progress:
 - `Geography.csv` — per-video country breakdown (views, watch time, subscribers)
 - `Device type.csv` — per-video device breakdown (mobile, desktop, TV, etc.)
 - `Content type.csv` — per-video content type (short, videoOnDemand, liveStream)
+- `Demographics.csv` — per-video age/gender viewer percentage breakdown
+- `Retention.csv` — per-video audience retention curves (watch ratio + relative retention at each time point)
 
 **If using manual exports:** Load all CSVs. Note column names and date ranges. Identify the primary key for joining (usually video title or ID). Flag missing data.
 
