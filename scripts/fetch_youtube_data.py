@@ -314,6 +314,90 @@ def fetch_search_terms(analytics, video_ids, start_date, end_date, video_df):
     return df
 
 
+def fetch_geography(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video geographic breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "country"],
+        metrics=["views", "estimatedMinutesWatched", "subscribersGained"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Country", "Views", "Watch time (hours)", "Subscribers gained"])
+
+    df.columns = ["Video", "Country", "Views", "estimatedMinutesWatched", "Subscribers gained"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+    df["Subscribers gained"] = df["Subscribers gained"].astype(int)
+
+    return df[["Video", "Video title", "Country", "Views", "Watch time (hours)", "Subscribers gained"]]
+
+
+def fetch_device_type(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video device type breakdown."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "deviceType"],
+        metrics=["views", "estimatedMinutesWatched"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Device", "Views", "Watch time (hours)"])
+
+    df.columns = ["Video", "Device", "Views", "estimatedMinutesWatched"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+
+    return df[["Video", "Video title", "Device", "Views", "Watch time (hours)"]]
+
+
+def fetch_content_type(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch per-video content type breakdown (short, videoOnDemand, liveStream)."""
+    vid_filter = ",".join(video_ids)
+
+    rows, headers = fetch_report(
+        analytics,
+        dimensions=["video", "creatorContentType"],
+        metrics=["views", "estimatedMinutesWatched", "averageViewPercentage", "subscribersGained"],
+        start_date=start_date,
+        end_date=end_date,
+        filters=f"video=={vid_filter}",
+    )
+
+    df = pd.DataFrame(rows, columns=headers)
+    if df.empty:
+        return pd.DataFrame(columns=["Video", "Video title", "Content type", "Views", "Watch time (hours)", "Avg % viewed", "Subscribers gained"])
+
+    df.columns = ["Video", "Content type", "Views", "estimatedMinutesWatched", "Avg % viewed", "Subscribers gained"]
+
+    title_map = video_df.set_index("video_id")["title"]
+    df["Video title"] = df["Video"].map(title_map)
+    df["Watch time (hours)"] = (df["estimatedMinutesWatched"] * WT_MINUTES_TO_HOURS).round(4)
+    df["Views"] = df["Views"].astype(int)
+    df["Subscribers gained"] = df["Subscribers gained"].astype(int)
+    df["Avg % viewed"] = df["Avg % viewed"].round(2)
+
+    return df[["Video", "Video title", "Content type", "Views", "Watch time (hours)", "Avg % viewed", "Subscribers gained"]]
+
+
 # ── Main ────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
