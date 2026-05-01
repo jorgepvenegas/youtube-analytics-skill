@@ -41,7 +41,7 @@ Add a **Research Status** badge in the page footer:
 - When research completes: clickable link to `reports/research_<timestamp>.md`
 - If no research was launched: hidden or shows "No research queued"
 
-The status is updated via a simple JSON poll or file-watcher pattern. Since the server is already Python, the simplest approach is to check for the existence of the research report file on each page load and render the appropriate footer state.
+The status is rendered at page-load time: the server checks for the existence of `reports/research_*.md` files matching the current data directory's timestamp, and renders the appropriate footer state (in-progress / complete with link / not queued). No JavaScript polling needed.
 
 ### 3. Researcher Core (`scripts/researcher.py`)
 
