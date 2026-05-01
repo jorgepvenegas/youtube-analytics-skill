@@ -485,13 +485,13 @@ def main():
     print(f"Output directory: {output_dir}")
 
     # ── Fetch video list ──
-    print("\n[1/9] Fetching video list...")
+    print("\n[1/11] Fetching video list...")
     video_df = fetch_video_list(youtube, channel_id)
     video_ids = video_df["video_id"].tolist()
     print(f"      Found {len(video_df)} videos")
 
     # ── Fetch per-video analytics ──
-    print("\n[2/9] Fetching per-video lifetime analytics...")
+    print("\n[2/11] Fetching per-video lifetime analytics...")
     video_stats = fetch_video_analytics(analytics, video_ids, start_date, end_date)
     print(f"      Fetched stats for {len(video_stats)} videos")
 
@@ -548,7 +548,7 @@ def main():
     print(f"      Saved: {table_path}")
 
     # ── Fetch daily video breakdown ──
-    print("\n[3/9] Fetching daily video breakdown...")
+    print("\n[3/11] Fetching daily video breakdown...")
     daily_df = fetch_daily_video_breakdown(analytics, video_ids, start_date, end_date)
     print(f"      Fetched {len(daily_df)} day-video records")
 
@@ -571,7 +571,7 @@ def main():
     print(f"      Saved: {chart_path}")
 
     # ── Fetch channel totals ──
-    print("\n[4/9] Fetching channel daily totals...")
+    print("\n[4/11] Fetching channel daily totals...")
     totals_df = fetch_channel_totals(analytics, start_date, end_date)
     print(f"      Fetched {len(totals_df)} daily records")
 
@@ -587,7 +587,7 @@ def main():
     print(f"      Saved: {totals_path}")
 
     # ── Fetch traffic sources ──
-    print("\n[5/9] Fetching traffic sources...")
+    print("\n[5/11] Fetching traffic sources...")
     traffic_df = fetch_traffic_sources(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(traffic_df)} traffic source records")
 
@@ -596,7 +596,7 @@ def main():
     print(f"      Saved: {traffic_path}")
 
     # ── Fetch search terms ──
-    print("\n[6/9] Fetching search terms...")
+    print("\n[6/11] Fetching search terms...")
     search_df = fetch_search_terms(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(search_df)} search term records")
 
@@ -605,7 +605,7 @@ def main():
     print(f"      Saved: {search_path}")
 
     # ── Fetch geography ──
-    print("\n[7/9] Fetching geography...")
+    print("\n[7/11] Fetching geography...")
     geo_df = fetch_geography(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(geo_df)} geography records")
 
@@ -614,7 +614,7 @@ def main():
     print(f"      Saved: {geo_path}")
 
     # ── Fetch device type ──
-    print("\n[8/9] Fetching device types...")
+    print("\n[8/11] Fetching device types...")
     device_df = fetch_device_type(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(device_df)} device type records")
 
@@ -623,13 +623,31 @@ def main():
     print(f"      Saved: {device_path}")
 
     # ── Fetch content type ──
-    print("\n[9/9] Fetching content types...")
+    print("\n[9/11] Fetching content types...")
     content_df = fetch_content_type(analytics, video_ids, start_date, end_date, video_df)
     print(f"      Fetched {len(content_df)} content type records")
 
     content_path = output_dir / "Content type.csv"
     content_df.to_csv(content_path, index=False)
     print(f"      Saved: {content_path}")
+
+    # ── Fetch demographics ──
+    print("\n[10/11] Fetching demographics...")
+    demo_df = fetch_demographics(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(demo_df)} demographic records")
+
+    demo_path = output_dir / "Demographics.csv"
+    demo_df.to_csv(demo_path, index=False)
+    print(f"      Saved: {demo_path}")
+
+    # ── Fetch retention curves ──
+    print("\n[11/11] Fetching retention curves (1 API call per video)...")
+    retention_df = fetch_retention_curves(analytics, video_ids, start_date, end_date, video_df)
+    print(f"      Fetched {len(retention_df)} retention data points")
+
+    retention_path = output_dir / "Retention.csv"
+    retention_df.to_csv(retention_path, index=False)
+    print(f"      Saved: {retention_path}")
 
     # ── Summary ──
     print("\n" + "=" * 60)
