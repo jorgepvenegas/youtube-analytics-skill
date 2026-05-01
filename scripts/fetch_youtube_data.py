@@ -424,6 +424,43 @@ def fetch_demographics(analytics, video_ids, start_date, end_date, video_df):
     return df[["Video", "Video title", "Age group", "Gender", "Viewer %"]]
 
 
+def fetch_retention_curves(analytics, video_ids, start_date, end_date, video_df):
+    """Fetch audience retention curves — one API call per video."""
+    empty_cols = ["Video", "Video title", "Elapsed ratio", "Audience watch ratio", "Relative retention"]
+    title_map = video_df.set_index("video_id")["title"]
+    all_dfs = []
+
+    for i, video_id in enumerate(video_ids):
+        print(f"        Retention {i + 1}/{len(video_ids)}: {title_map.get(video_id, video_id)[:50]}")
+        try:
+            rows, headers = fetch_report(
+                analytics,
+                dimensions=["elapsedVideoTimeRatio"],
+                metrics=["audienceWatchRatio", "relativeRetentionPerformance"],
+                start_date=start_date,
+                end_date=end_date,
+                filters=f"video=={video_id};audienceType==ORGANIC",
+            )
+        except Exception as e:
+            print(f"        ⚠ Skipped {video_id}: {e}")
+            continue
+
+        if not rows:
+            continue
+
+        df = pd.DataFrame(rows, columns=headers)
+        df.columns = ["Elapsed ratio", "Audience watch ratio", "Relative retention"]
+        df["Video"] = video_id
+        df["Video title"] = title_map.get(video_id, "")
+        all_dfs.append(df)
+
+    if not all_dfs:
+        return pd.DataFrame(columns=empty_cols)
+
+    result = pd.concat(all_dfs, ignore_index=True)
+    return result[empty_cols]
+
+
 # ── Main ────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
