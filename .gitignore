@@ -8,9 +8,10 @@ __pycache__/
 client_secret.json
 token.pickle
 
-# Generated reports
+# Generated reports & data
 report.html
 reports/
+data/
 
 # OS
 .DS_Store
