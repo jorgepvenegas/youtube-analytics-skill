@@ -38,8 +38,9 @@ SCOPES = [
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = Path.cwd()
 DATA_DIR = PROJECT_ROOT / "data"
-TOKEN_PATH = SCRIPT_DIR / "token.pickle"
-CLIENT_SECRET_PATH = SCRIPT_DIR / "client_secret.json"
+# Look for credentials in project root (not script dir, so scripts can be symlinked)
+TOKEN_PATH = PROJECT_ROOT / "token.pickle"
+CLIENT_SECRET_PATH = PROJECT_ROOT / "client_secret.json"
 WT_MINUTES_TO_HOURS = 1 / 60
 
 

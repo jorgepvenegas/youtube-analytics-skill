@@ -56,21 +56,6 @@ uv run python scripts/serve_report.py              # Generate interactive dashbo
 
 **Note:** Impressions/CTR may be unavailable via API for some channels. If so, CTR will show 0.00% — the rest of the analysis still works.
 
-### Option B: Manual YouTube Studio Exports (Fallback)
-
-If the API isn't set up, ask the user to export from YouTube Studio (Advanced Mode → Export):
-
-| Report | File Pattern | Key Columns |
-|--------|-------------|-------------|
-| Video analytics | `Video` | Video, Views, Watch time, Avg view duration, Impressions, CTR |
-| Audience retention | `Retention` | Video, Retention percentage at intervals |
-| Traffic source | `Traffic source` | Video, Source, Views, Watch time |
-| Demographics | `Viewer age/gender` | Age/gender, Views, Avg view duration |
-| Engagement | `Engagement` or per-video | Likes, Comments, Shares, Subscribers gained |
-| Revenue (if monetized) | `Revenue` | Video, Estimated revenue, RPM |
-
-If the user only has partial data, work with what's available.
-
 ## Environment Setup
 
 This skill uses **uv** for Python environment management. If not already set up:
